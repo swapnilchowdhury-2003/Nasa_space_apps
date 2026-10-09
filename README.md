@@ -1,18 +1,31 @@
-# Nasa_space_apps
-This repo is created  by Levi Squad for the NASA Space Apps Challenge 2026.
-# AstraGuard AI
+# AstraGuard AI: Front-end Prototype
+Team **Levi Squad** · NASA Space Apps Challenge 2026
 
-Offline-first health monitoring dashboard for astronauts on long Moon and Mars missions.
-Built by **Levi Squad** for the **NASA Space Apps Challenge 2026**.
+Offline-first astronaut health console. Front end only: all data is simulated in the browser.
 
-> **Note:** This is an early **prototype**. It runs on the front end only, and all data is simulated.
+## Run
+Open `index.html` in any modern browser. No server, no internet needed (Bootstrap and Chart.js are bundled in `vendor/`).
 
+## Demo flow (for the pitch)
+1. Show the live vitals for the focused crew member (Vega).
+2. Click **Cardiovascular stress**, **Radiation event** or **Fatigue** in the Scenario simulator.
+3. Watch tiles turn amber/red, the anomaly score rise, and the alert feed fill.
+4. A protocol pop-up appears with step-by-step actions. Tick the steps and mark completed.
+5. Toggle **Earth uplink** off to show the system keeps working with no Mission Control link.
+6. Point at the 48-hour risk forecast and the Vitality index.
 
-## What it shows
-- Live crew vitals, anomaly score and 48-hour risk forecast
-- Alerts with step-by-step protocols
-- Keeps working when the Earth uplink is off
+## Structure
+- `index.html`: layout
+- `css/style.css`: dark HUD theme
+- `js/sim.js`: simulated telemetry, baseline-deviation score, forecast, placeholder protocols
+- `js/app.js`: charts, alerts, modal, UI logic
+- `vendor/`: Bootstrap 5.3.3, Chart.js 4.4.4
 
-## Coming next
-FastAPI backend, PostgreSQL, real ML models (Isolation Forest, Prophet/XGBoost) and wearable sensor input.
+## What is simulated (be honest with judges)
+- Vitals and habitat data are generated random walks around each crew member's baseline.
+- "Anomaly score" is a simple z-score deviation, a stand-in for the planned Isolation Forest model.
+- 48-hour forecast is a mock curve, a stand-in for Prophet / XGBoost.
+- Protocol text is placeholder content, not official NASA guidance.
 
+## Next steps
+FastAPI + WebSocket backend, PostgreSQL storage, real ML models, BLE wearable input, NASA analog mission datasets.

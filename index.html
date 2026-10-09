@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en" data-bs-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AstraGuard AI · Crew Health Console (Prototype)</title>
+  <link href="vendor/bootstrap.min.css" rel="stylesheet">
+  <link href="css/style.css" rel="stylesheet">
+</head>
+<body>
+<div class="stars"></div>
+
+<!-- ===== TOP BAR ===== -->
+<header class="topbar">
+  <div class="brand">
+    <svg viewBox="0 0 48 48" width="40" height="40" aria-hidden="true">
+      <path d="M24 3 6 10v13c0 11 7.5 19 18 22 10.500-3 18-11 18-22V10z" fill="none" stroke="#4cc9f0" stroke-width="2.500"/>
+      <path d="M10 25h9l3-8 5 15 3-7h8" fill="none" stroke="#ff8a4c" stroke-width="2.500" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <div>
+      <div class="brand-name">AstraGuard <span>AI</span></div>
+      <div class="brand-sub">Autonomous Astronaut Health &amp; Predictive Vitality System</div>
+    </div>
+  </div>
+
+  <div class="met d-none d-md-block">
+    <div class="met-label">MISSION ELAPSED TIME</div>
+    <div class="met-clock" id="met">D+142 06:12:33</div>
+  </div>
+
+  <div class="top-right">
+    <div class="form-check form-switch comms">
+      <input class="form-check-input" type="checkbox" role="switch" id="commsSwitch" checked>
+      <label class="form-check-label" for="commsSwitch">Earth uplink</label>
+    </div>
+    <span class="pill pill-ok" id="sysPill"><i class="dot"></i> ON-BOARD AI ACTIVE</span>
+  </div>
+</header>
+
+<div class="banner" id="blackoutBanner" hidden>
+  <strong>Uplink to Mission Control lost.</strong> AstraGuard keeps monitoring and advising locally. Events are queued for sync when the link returns.
+</div>
+
+<main class="container-fluid px-3 px-xl-4 py-3">
+  <div class="row g-3">
+
+    <!-- ===== LEFT COLUMN ===== -->
+    <section class="col-xl-3 col-lg-4">
+      <div class="panel">
+        <div class="panel-title">Crew <small>click to focus</small></div>
+        <div id="crewList" class="crew-list"></div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-title">Scenario simulator <small>for demo</small></div>
+        <p class="hint">Applies to the focused crew member. Watch the AI react.</p>
+        <div class="d-grid gap-2" id="scenarioBtns">
+          <button class="btn scen active" data-s="nominal">Nominal operations</button>
+          <button class="btn scen" data-s="radiation">Radiation event</button>
+          <button class="btn scen" data-s="fatigue">Fatigue &amp; sleep debt</button>
+          <button class="btn scen" data-s="cardio">Cardiovascular stress</button>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-title">Earth link</div>
+        <div class="link-row"><span>One-way delay</span><b>~20 min <small>(Mars)</small></b></div>
+        <div class="link-row"><span>Decision mode</span><b id="modeText" class="text-ok">Autonomous</b></div>
+        <div class="link-row"><span>Queued for sync</span><b id="queueCount">0</b></div>
+      </div>
+    </section>
+
+    <!-- ===== CENTER COLUMN ===== -->
+    <section class="col-xl-6 col-lg-8">
+      <div class="focus-head">
+        <div>
+          <div class="focus-name" id="focusName">Vega</div>
+          <div class="focus-role" id="focusRole">Commander</div>
+        </div>
+        <span class="pill pill-ok" id="focusPill"><i class="dot"></i> NOMINAL</span>
+      </div>
+
+      <div class="row g-3 tiles" id="tiles"></div>
+
+      <div class="panel mt-3">
+        <div class="panel-title">Live telemetry <small>heart rate &amp; HRV · last 60 s</small></div>
+        <div class="chart-box h-260"><canvas id="liveChart"></canvas></div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-title">48-hour risk forecast <small>simulated model output</small></div>
+        <div class="chart-box h-220"><canvas id="forecastChart"></canvas></div>
+        <div class="hint mb-0 mt-2" id="forecastNote">Projected physiological stress risk for the focused crew member.</div>
+      </div>
+    </section>
+
+    <!-- ===== RIGHT COLUMN ===== -->
+    <section class="col-xl-3 col-lg-12">
+      <div class="row g-3">
+        <div class="col-xl-12 col-lg-6">
+          <div class="panel">
+            <div class="panel-title">Vitality index</div>
+            <div class="gauge">
+              <canvas id="gaugeChart"></canvas>
+              <div class="gauge-text"><b id="vitalityNum">100</b><span>/ 100</span></div>
+            </div>
+            <div class="text-center hint mb-0" id="vitalityLabel">Within personal baseline</div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-title">Anomaly score <small>deviation from baseline</small></div>
+            <div class="chart-box h-130"><canvas id="anomChart"></canvas></div>
+          </div>
+        </div>
+
+        <div class="col-xl-12 col-lg-6">
+          <div class="panel">
+            <div class="panel-title">Habitat environment</div>
+            <div id="envList"></div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-title">Alerts &amp; events</div>
+            <div id="alertFeed" class="feed"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <footer class="foot">
+    <div>Prototype · all data is <b>simulated</b> · not a medical device · protocol text is placeholder content to be replaced with NASA-aligned clinical guidance.</div>
+    <span>Levi Squad · NASA Space Apps Challenge 2026</span>
+  </footer>
+</main>
+
+<!-- ===== PROTOCOL MODAL ===== -->
+<div class="modal fade" id="protoModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div>
+          <div class="modal-kicker" id="mKicker">ACTION REQUIRED</div>
+          <h5 class="modal-title" id="mTitle">Protocol</h5>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p id="mWhy" class="mb-3"></p>
+        <div id="mSteps" class="steps"></div>
+        <div class="hint mt-3 mb-0">Prototype placeholder protocol. Replace with approved clinical guidance before any real use.</div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline-light" data-bs-dismiss="modal">Remind me later</button>
+        <button class="btn btn-accent" id="mDone">Mark as completed</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="vendor/bootstrap.bundle.min.js"></script>
+<script src="vendor/chart.umd.js"></script>
+<script src="js/sim.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
